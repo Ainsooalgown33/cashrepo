@@ -24,8 +24,12 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true
     },
-    "extraFiles": [
-      "database.json"
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "index.html",
+      "src/**/*"
     ]
   },
   "dependencies": {

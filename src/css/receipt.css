@@ -1,0 +1,123 @@
+/* ============================================================
+   Cashier POS - Thermal receipt
+   One stylesheet drives both the on-screen preview and the
+   printed output, so what the cashier previews is what prints.
+
+   Paper widths are real millimetres, not guessed pixels:
+     58mm roll -> ~48mm printable
+     80mm roll -> ~72mm printable
+   The active width is set by receipt.js on #receiptPaper.
+   ============================================================ */
+
+.receipt {
+    --paper-w: 72mm;            /* overridden for 58mm paper */
+    width: var(--paper-w);
+    padding: 4mm 3mm 6mm;
+    background: #ffffff;
+    color: #000000;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.42;
+    text-align: left;
+}
+.receipt.paper-58 { --paper-w: 48mm; font-size: 10px; }
+
+/* Preview only: make it read as a slip of paper on the dark console */
+.receipt-preview {
+    display: flex;
+    justify-content: center;
+    padding: var(--s-5);
+    background: var(--surface-3);
+    border-radius: var(--r);
+}
+.receipt-preview .receipt {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.rc-store {
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.receipt.paper-58 .rc-store { font-size: 12px; }
+
+.rc-center { text-align: center; }
+.rc-sub { text-align: center; font-size: 10px; }
+
+.rc-rule { border-top: 1px dashed #000; margin: 2.5mm 0; }
+
+.rc-kv { display: flex; justify-content: space-between; gap: 3mm; }
+.rc-kv span:last-child { text-align: right; }
+
+/* Item lines: description wraps, amount stays pinned right */
+.rc-item { display: flex; justify-content: space-between; gap: 2mm; margin-bottom: 1.4mm; }
+.rc-item-name { flex: 1; min-width: 0; word-break: break-word; }
+.rc-item-qty { font-size: 10px; }
+.rc-item-amt { white-space: nowrap; text-align: right; }
+
+.rc-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 700;
+}
+.receipt.paper-58 .rc-total { font-size: 12px; }
+
+.rc-foot { margin-top: 4mm; text-align: center; font-size: 10px; }
+.rc-reprint {
+    margin-top: 2mm;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   Print: only the paper survives.
+   The receipt lives inside the preview modal, so the modal
+   chrome is flattened rather than the receipt being duplicated
+   into a second hidden node that could drift out of sync.
+   ============================================================ */
+@media print {
+    html, body {
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+    }
+
+    /* Everything that is not the receipt is not printed. */
+    .app, .toasts, .modal-head, .modal-foot, .no-print { display: none !important; }
+
+    .modal-backdrop {
+        position: static !important;
+        display: block !important;
+        padding: 0 !important;
+        background: none !important;
+        animation: none !important;
+    }
+    .modal {
+        max-height: none !important;
+        width: auto !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: none !important;
+        animation: none !important;
+        overflow: visible !important;
+    }
+    .modal-body { padding: 0 !important; overflow: visible !important; }
+
+    .receipt-preview {
+        display: block !important;
+        padding: 0 !important;
+        background: none !important;
+        border-radius: 0 !important;
+    }
+    .receipt {
+        box-shadow: none !important;
+        width: var(--paper-w) !important;
+        margin: 0 !important;
+    }
+}

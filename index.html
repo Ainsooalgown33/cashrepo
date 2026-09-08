@@ -3,554 +3,462 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cashier Pro - Secure Enterprise System</title>
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #e0e7ff;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --success: #10b981;
-            --success-hover: #059669;
-            --danger: #ef4444;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 14px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 2rem; line-height: 1.5; }
-
-        .overlay-view { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .auth-box { background: white; padding: 2.5rem; border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 380px; text-align: center; }
-        .auth-box h1 { margin-bottom: 0.5rem; color: var(--primary); font-size: 1.8rem; }
-        
-        #appView { display: none; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 1.5rem; }
-        .user-badge { display: flex; align-items: center; gap: 1rem; background: white; padding: 0.5rem 1rem; border-radius: 100px; box-shadow: var(--shadow); font-weight: 600; font-size: 0.85rem; }
-        .role-tag { background: var(--primary-light); color: var(--primary); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; text-transform: uppercase; }
-        .logout-btn { color: var(--danger); cursor: pointer; text-decoration: underline; border: none; background: none; font-weight: bold; }
-
-        .navbar { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; background: var(--card-bg); padding: 0.5rem; border-radius: 100px; box-shadow: var(--shadow); width: fit-content; margin-left: auto; margin-right: auto; }
-        .nav-btn { padding: 0.6rem 1.8rem; border: none; background: transparent; color: var(--text-muted); font-weight: 600; border-radius: 100px; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
-        .nav-btn.active { background: var(--primary); color: white; }
-
-        .container { max-width: 1200px; margin: 0 auto; gap: 1.5rem; display: grid; grid-template-columns: 380px 1fr; }
-        @media (max-width: 950px) { .container { grid-template-columns: 1fr; } }
-
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .card h2 { font-size: 1.15rem; font-weight: 700; color: #1e293b; }
-        .admin-only { display: none !important; }
-
-        .form-group { margin-bottom: 1rem; text-align: left; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; color: #475569; }
-        input, select { width: 100%; padding: 0.65rem 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; background-color: #f8fafc; outline: none; }
-        input:focus { border-color: var(--primary); background-color: #fff; }
-        input[readonly] { background-color: #e2e8f0; cursor: not-allowed; color: #475569; }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .btn { border: none; border-radius: 8px; padding: 0.75rem 1.2rem; font-weight: 600; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; font-size: 0.9rem; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: var(--success-hover); }
-        .btn-secondary { background-color: #f1f5f9; color: #475569; }
-
-        .table-container { overflow-x: auto; margin-top: 1rem; border-radius: 10px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; text-align: left; background: white; font-size: 0.85rem; }
-        th { background-color: #f8fafc; padding: 0.85rem 1rem; font-weight: 700; color: #475569; border-bottom: 2px solid var(--border); font-size: 0.75rem; text-transform: uppercase; }
-        td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
-
-        #receiptContainer { display: none; }
-        @media print { 
-            @page { size: auto; margin: 0; } 
-            body * { visibility: hidden; } 
-            #receiptContainer, #receiptContainer * { visibility: visible; } 
-            #receiptContainer { display: flex !important; justify-content: center; position: absolute; left: 0; top: 0; width: 100vw; } 
-            .receipt-card { width: 320px; background: #ffffff; padding: 20px; font-size: 13px; font-family: monospace !important; }
-            .item-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-            .divider { border-bottom: 1px dashed #000; margin: 10px 0; }
-        }
-    </style>
+    <!-- Local-only app: no remote fonts, scripts, or styles. -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src http://127.0.0.1:*">
+    <title>Cashier POS</title>
+    <link rel="stylesheet" href="src/css/tokens.css">
+    <link rel="stylesheet" href="src/css/app.css">
+    <link rel="stylesheet" href="src/css/receipt.css">
 </head>
 <body>
 
-    <!-- 1. LOGIN SCREEN -->
-    <div id="loginView" class="overlay-view">
-        <div class="auth-box">
-            <h1>Cashier Pro</h1>
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">Sign in to continue</p>
-            <form id="loginForm">
-                <div class="form-group"><label>Username</label><input type="text" id="loginUser" required></div>
-                <div class="form-group"><label>Password</label><input type="password" id="loginPass" required></div>
-                <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Sign In</button>
-            </form>
-        </div>
-    </div>
+<!-- ============================================================
+     Sign in
+     ============================================================ -->
+<div class="login-overlay" id="loginOverlay" hidden>
+    <form class="login-box" id="loginForm" autocomplete="off" novalidate>
+        <div class="login-brand">Cashier</div>
+        <div class="login-sub">Sign in to open the till</div>
 
-    <!-- 2. MAIN APPLICATION -->
-    <div id="appView">
-        <div class="top-bar">
-            <h2>Cashier Pro System</h2>
-            <div class="user-badge">
-                <span id="activeUser">User</span>
-                <span id="activeRole" class="role-tag">Role</span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
+        <div class="field">
+            <label for="loginUser">Username</label>
+            <input class="input" type="text" id="loginUser" autocomplete="username">
+        </div>
+        <div class="field">
+            <label for="loginPass">Password</label>
+            <input class="input" type="password" id="loginPass" autocomplete="current-password">
         </div>
 
-        <div class="navbar">
-            <button id="navCashier" class="nav-btn active" onclick="switchView('cashier')">Terminal</button>
-            <button id="navAdmin" class="nav-btn admin-only" onclick="switchView('admin')">Admin Control</button>
+        <div class="form-error" id="loginError" hidden></div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="submit" id="loginSubmit">
+            Sign in
+        </button>
+        <button class="btn btn-ghost btn-block btn-sm" type="button" id="loginForgot">
+            Forgot password? Use a recovery key
+        </button>
+    </form>
+</div>
+
+<!-- ============================================================
+     Application shell
+     ============================================================ -->
+<div class="app" id="appShell" hidden>
+
+    <header class="statusbar">
+        <div class="brand">Cashier</div>
+
+        <nav class="tabs" role="tablist">
+            <button id="tabTerminal" class="tab active" role="tab" aria-selected="true" type="button">
+                Terminal <kbd>Ctrl T</kbd>
+            </button>
+            <button id="tabSales" class="tab" role="tab" aria-selected="false" type="button">
+                Sales <kbd>Ctrl H</kbd>
+            </button>
+            <button id="tabInventory" class="tab" role="tab" aria-selected="false" type="button" hidden>
+                Inventory <kbd>Ctrl I</kbd>
+            </button>
+            <button id="tabSettings" class="tab" role="tab" aria-selected="false" type="button" hidden>
+                Settings <kbd>Ctrl ,</kbd>
+            </button>
+        </nav>
+
+        <div class="statusbar-right">
+            <span class="stat" id="barStore">—</span>
+            <span class="stat-sep"></span>
+            <span class="stat">
+                <strong id="barUser">—</strong>
+                <span class="chip" id="barRole"></span>
+            </span>
+            <span class="stat-sep"></span>
+            <span class="stat">
+                <span class="dot" id="dotBackend"></span>
+                <span id="labelBackend">Connecting…</span>
+            </span>
+            <span class="stat-sep"></span>
+            <span class="stat num" id="clock">—</span>
+            <button class="btn btn-sm btn-ghost" type="button" id="btnLogout">Sign out</button>
         </div>
-        
-        <!-- CASHIER VIEW -->
-        <div id="cashierView" class="container">
-            <div class="sidebar">
-                <div class="card">
-                    <h2>Process Sale</h2>
-                    <form id="cashierForm" style="margin-top: 1rem;">
-                        <div class="form-group">
-                            <label>Search / Select Product</label>
-                            <input type="text" id="itemSearch" list="inventoryList" placeholder="Type product name..." required oninput="handleProductSelect()">
-                            <datalist id="inventoryList"></datalist>
+    </header>
+
+    <main class="main">
+
+        <!-- ============================================================
+             Terminal
+             ============================================================ -->
+        <section id="viewTerminal" class="view">
+            <div class="terminal">
+
+                <aside class="entry">
+                    <!-- novalidate: native bubbles are the wrong register for a
+                         till, and terminal.js validates every field itself. -->
+                    <form id="entryForm" autocomplete="off" novalidate>
+                        <div class="pane-title" style="margin-bottom: var(--s-4);">New line</div>
+
+                        <div class="field" style="margin-bottom: var(--s-4);">
+                            <label for="productSearch">Product</label>
+                            <input class="input" type="text" id="productSearch"
+                                   list="productOptions" placeholder="Start typing a product…"
+                                   autofocus>
+                            <datalist id="productOptions"></datalist>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Available Stock</label>
-                                <input type="number" id="availableStock" readonly placeholder="0">
+
+                        <!-- Price is shown, never typed: it comes from the
+                             catalogue and is re-priced server-side on save. -->
+                        <div class="readouts" style="margin-bottom: var(--s-4);">
+                            <div class="readout">
+                                <span class="readout-key">Unit price</span>
+                                <span class="readout-val num" id="unitPrice">—</span>
                             </div>
-                            <div class="form-group">
-                                <label>Unit Price (₦)</label>
-                                <input type="number" id="price" readonly placeholder="0.00">
+                            <div class="readout">
+                                <span class="readout-key">In stock</span>
+                                <span class="readout-val num" id="availableStock">—</span>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Quantity to Sell</label>
-                            <input type="number" id="quantity" step="1" min="1" value="1" required>
+
+                        <div class="field" style="margin-bottom: var(--s-4);">
+                            <label for="quantity">Quantity</label>
+                            <input class="input num" type="number" id="quantity"
+                                   step="1" min="1" value="1">
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Item to Cart</button>
+
+                        <div class="line-preview" id="linePreview" style="margin-bottom: var(--s-4);">
+                            <span>Line total</span><strong>—</strong>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" type="submit" id="btnAddLine" disabled>
+                            Add to cart <kbd>Enter</kbd>
+                        </button>
                     </form>
+
+                    <div class="field">
+                        <label for="customerName">Customer (optional)</label>
+                        <input class="input" type="text" id="customerName"
+                               placeholder="Walk-In" autocomplete="off">
+                    </div>
+                </aside>
+
+                <section class="cart">
+                    <div class="cart-head">
+                        <div class="pane-title">Current sale</div>
+                        <div class="cart-count" id="cartCount">Empty</div>
+                    </div>
+
+                    <div class="cart-lines" id="cartLines" hidden></div>
+                    <div class="empty" id="cartEmpty">
+                        <div class="empty-title">Nothing rung up yet</div>
+                        <div class="empty-hint">
+                            Start typing a product name on the left and press Enter.
+                            The total updates here.
+                        </div>
+                    </div>
+
+                    <div class="cart-foot">
+                        <div class="total-row">
+                            <div class="total-label">Total</div>
+                            <div>
+                                <div class="total-value num" id="totalValue">₦0.00</div>
+                                <div class="total-sub" id="totalSub">Nothing rung up</div>
+                            </div>
+                        </div>
+                        <div class="foot-actions">
+                            <button class="btn btn-primary btn-lg" id="btnCheckout" type="button" disabled>
+                                <span id="checkoutLabel">Print &amp; Save</span> <kbd>F2</kbd>
+                            </button>
+                            <button class="btn btn-danger btn-lg" id="btnClearCart" type="button" disabled>
+                                Clear <kbd>Del</kbd>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             Sales
+             ============================================================ -->
+        <section id="viewSales" class="view" hidden>
+            <div class="panel">
+                <div class="panel-head">
+                    <div class="panel-title">Sales</div>
+                    <div class="muted" id="salesSummary"></div>
+                    <div class="spacer"></div>
+                    <button class="btn btn-sm" id="salesExport" type="button" hidden disabled>Export CSV</button>
+                    <button class="btn btn-sm" id="salesRefresh" type="button">Refresh</button>
+                </div>
+
+                <div class="toolbar">
+                    <input class="input" type="search" id="salesSearch"
+                           placeholder="Search order #, customer, cashier or item"
+                           style="min-width: 300px;">
+                    <label class="check">
+                        <input type="checkbox" id="salesToday"> Today only
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" id="salesMine"> My sales only
+                    </label>
+                    <span class="tool-field"><label for="salesFrom">From</label>
+                        <input class="input" type="date" id="salesFrom"></span>
+                    <span class="tool-field"><label for="salesTo">To</label>
+                        <input class="input" type="date" id="salesTo"></span>
+                    <button class="btn btn-sm btn-ghost" id="salesReset" type="button">Reset</button>
+                </div>
+
+                <div class="stats" id="salesStats" hidden>
+                    <div class="stat-tile">
+                        <div class="stat-key">Revenue</div>
+                        <div class="stat-val num accent" id="statRevenue">₦0.00</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-key">Orders</div>
+                        <div class="stat-val num" id="statOrders">0</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-key">Average order</div>
+                        <div class="stat-val num" id="statAverage">₦0.00</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-key">Units sold</div>
+                        <div class="stat-val num" id="statUnits">0</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-key">Top seller</div>
+                        <div class="stat-val" id="statTop" style="font-size: var(--t-md);">—</div>
+                    </div>
+                </div>
+
+                <div class="scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>When</th>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th id="salesCashierCol">Cashier</th>
+                                <th>Items</th>
+                                <th class="right">Total</th>
+                                <th class="right">Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesBody"></tbody>
+                    </table>
+                    <div class="empty" id="salesEmpty">
+                        <div class="empty-title">Loading sales…</div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Current Sale Queue</h2>
-                        <button type="button" class="btn btn-success" style="width: auto;" onclick="printReceipt()">Complete & Print Receipt</button>
+        <!-- ============================================================
+             Inventory (administrators)
+             ============================================================ -->
+        <section id="viewInventory" class="view" hidden>
+            <div class="split">
+                <aside class="entry">
+                    <form id="inventoryForm" autocomplete="off" novalidate>
+                        <div class="pane-title" style="margin-bottom: var(--s-4);">
+                            Add or restock
+                        </div>
+
+                        <div class="field" style="margin-bottom: var(--s-4);">
+                            <label for="invName">Product name</label>
+                            <input class="input" type="text" id="invName"
+                                   placeholder="e.g. Paracetamol 500mg">
+                        </div>
+
+                        <div class="hint-box" id="invHint" hidden></div>
+
+                        <div class="field" style="margin-bottom: var(--s-4);">
+                            <label for="invCategory">Category</label>
+                            <select class="select" id="invCategory"></select>
+                        </div>
+
+                        <div class="row-2" style="margin-bottom: var(--s-4);">
+                            <div class="field">
+                                <label for="invQuantity">Quantity</label>
+                                <input class="input num" type="number" id="invQuantity"
+                                       step="1" placeholder="e.g. 100">
+                            </div>
+                            <div class="field">
+                                <label for="invPrice">Unit price (₦)</label>
+                                <input class="input num" type="number" id="invPrice"
+                                       step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" type="submit" id="invSubmit">
+                            Add product
+                        </button>
+                    </form>
+                </aside>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">Inventory</div>
+                        <div class="muted" id="invSummary"></div>
+                        <div class="spacer"></div>
+                        <button class="btn btn-sm" id="invRefresh" type="button">Refresh</button>
                     </div>
-                    <div class="table-container">
+
+                    <div class="toolbar">
+                        <input class="input" type="search" id="invSearch"
+                               placeholder="Search product or category" style="min-width: 260px;">
+                        <label class="check">
+                            <input type="checkbox" id="invLowOnly"> Low stock only
+                        </label>
+                    </div>
+
+                    <div class="scroll">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Item Name</th>
-                                    <th>Qty</th>
-                                    <th>Unit Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dataTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Session Sales History for Reference -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Recent Completed Sales (Read-Only Reference)</h2>
-                        <button class="btn btn-secondary" style="width: auto;" onclick="loadRecentSales()">Refresh</button>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Order #</th>
-                                    <th>Items</th>
-                                    <th>Total Amount</th>
-                                    <th>Cashier</th>
-                                </tr>
-                            </thead>
-                            <tbody id="referenceHistoryBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADMIN DASHBOARD -->
-        <div id="adminView" class="container admin-only" style="display: none;">
-            <div class="sidebar">
-                <!-- Add Product with Name, Qty, and Price -->
-                <div class="card">
-                    <h2>Add / Update Product</h2>
-                    <form id="inventoryForm" style="margin-top: 1rem;">
-                        <div class="form-group">
-                            <label>Product Name</label>
-                            <input type="text" id="invName" placeholder="e.g. Paracetamol 500mg" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Category</label>
-                            <input type="text" id="invCategory" placeholder="e.g. Pharmaceuticals" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Quantity in Stock</label>
-                                <input type="number" id="invQuantity" min="1" placeholder="e.g. 100" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Set Fixed Price (₦)</label>
-                                <input type="number" id="invPrice" min="0" step="0.01" placeholder="e.g. 1500" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save to Inventory</button>
-                    </form>
-                </div>
-
-                <!-- Create Cashier Account -->
-                <div class="card">
-                    <h2>Create Cashier Account</h2>
-                    <form id="createCashierForm" style="margin-top: 1rem;">
-                        <div class="form-group">
-                            <label>Cashier Username</label>
-                            <input type="text" id="newCashierUser" placeholder="e.g. cashier1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Assign Password</label>
-                            <input type="password" id="newCashierPass" required>
-                        </div>
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;">Create Cashier</button>
-                    </form>
-                </div>
-            </div>
-
-            <div>
-                <!-- Current Inventory Stock Table -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Master Inventory & Stock Levels</h2>
-                        <button class="btn btn-secondary" style="width: auto;" onclick="fetchInventory()">Refresh</button>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product Name</th>
+                                    <th>Product</th>
                                     <th>Category</th>
-                                    <th>Available Qty</th>
-                                    <th>Fixed Price</th>
+                                    <th class="right">Price</th>
+                                    <th class="right">Stock</th>
+                                    <th class="right">Stock value</th>
+                                    <th class="right"></th>
                                 </tr>
                             </thead>
-                            <tbody id="inventoryTableBody"></tbody>
+                            <tbody id="invBody"></tbody>
                         </table>
+                        <div class="empty" id="invEmpty">
+                            <div class="empty-title">Loading inventory…</div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Master Sales Records -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>All Sales History (Master Admin Audit)</h2>
-                        <button class="btn btn-secondary" style="width: auto;" onclick="loadRecentSales()">Refresh</button>
-                    </div>
-                    <div class="table-container">
+        <!-- ============================================================
+             Settings (administrators)
+             ============================================================ -->
+        <section id="viewSettings" class="view" hidden>
+            <div class="settings-grid">
+
+                <section class="panel-card">
+                    <div class="pane-title" style="margin-bottom: var(--s-4);">Till details</div>
+                    <p class="muted" style="margin-bottom: var(--s-4); font-size: var(--t-sm);">
+                        Printed on every receipt. Stamped onto each sale as it is
+                        recorded, so changing this never rewrites past receipts.
+                    </p>
+                    <form id="storeForm" autocomplete="off" novalidate
+                          style="display: grid; gap: var(--s-3);">
+                        <div class="field">
+                            <label for="storeName">Store name</label>
+                            <input class="input" type="text" id="storeName">
+                        </div>
+                        <div class="field">
+                            <label for="storeAddress">Address</label>
+                            <input class="input" type="text" id="storeAddress">
+                        </div>
+                        <div class="field">
+                            <label for="storePhone">Phone</label>
+                            <input class="input" type="text" id="storePhone">
+                        </div>
+                        <div class="field">
+                            <label for="paperWidth">Receipt paper</label>
+                            <select class="select" id="paperWidth">
+                                <option value="80">80mm roll</option>
+                                <option value="58">58mm roll</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-block" type="submit">Save till details</button>
+                    </form>
+                </section>
+
+                <section class="panel-card">
+                    <div class="pane-title" style="margin-bottom: var(--s-4);">Add staff account</div>
+                    <form id="userForm" autocomplete="off" novalidate
+                          style="display: grid; gap: var(--s-3);">
+                        <div class="field">
+                            <label for="newUser">Username</label>
+                            <input class="input" type="text" id="newUser" autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label for="newPass">Temporary password</label>
+                            <input class="input" type="password" id="newPass" autocomplete="new-password">
+                        </div>
+                        <div class="field">
+                            <label for="newRole">Role</label>
+                            <select class="select" id="newRole">
+                                <option value="cashier">Cashier</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-block" type="submit" id="userSubmit">
+                            Create account
+                        </button>
+                    </form>
+
+                    <div class="pane-title" style="margin: var(--s-6) 0 var(--s-3);">Accounts</div>
+                    <div class="scroll" style="max-height: 260px;">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Order #</th>
-                                    <th>Cashier</th>
-                                    <th>Items Sold</th>
-                                    <th>Total Amount</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th class="right"></th>
                                 </tr>
                             </thead>
-                            <tbody id="adminSalesBody"></tbody>
+                            <tbody id="userBody"></tbody>
                         </table>
+                        <div class="empty" id="userEmpty">
+                            <div class="empty-title">Loading accounts…</div>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <section class="panel-card">
+                    <div class="pane-title" style="margin-bottom: var(--s-4);">Your account</div>
+                    <p class="muted" style="margin-bottom: var(--s-4); font-size: var(--t-sm);">
+                        If a password is lost, the recovery key in
+                        <strong>RECOVERY_KEY.txt</strong> resets it from the sign-in
+                        screen. That file was written to the app data folder when this
+                        till was first set up — keep a copy somewhere else.
+                    </p>
+                    <button class="btn btn-block" type="button" id="btnChangePassword">
+                        Change my password
+                    </button>
+                </section>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- PRINT RECEIPT TEMPLATE -->
-    <div id="receiptContainer">
-        <div class="receipt-card">
-            <h2 style="text-align:center;">Store POS Receipt</h2>
-            <div class="divider"></div>
-            <div>Order #: <span id="receiptOrderNum"></span></div>
-            <div>Date: <span id="receiptDate"></span></div>
-            <div>Cashier: <span id="receiptSalesPerson"></span></div>
-            <div class="divider"></div>
-            <div id="receiptItemList"></div>
-            <div class="divider"></div>
-            <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                <div>TOTAL</div>
-                <div id="receiptGrandTotal">₦0.00</div>
-            </div>
-        </div>
-    </div>
+    <footer class="hints">
+        <span class="hint" id="hintsTerminal">
+            <kbd>Enter</kbd> add line
+            <kbd style="margin-left: var(--s-4);">F2</kbd> print &amp; save
+            <kbd style="margin-left: var(--s-4);">F4</kbd> remove selected
+            <kbd style="margin-left: var(--s-4);">Del</kbd> clear cart
+            <kbd style="margin-left: var(--s-4);">Esc</kbd> clear form
+        </span>
+        <span class="hint" style="margin-left: auto;">
+            <kbd>Ctrl T</kbd> terminal
+            <kbd style="margin-left: var(--s-3);">Ctrl H</kbd> sales
+            <kbd style="margin-left: var(--s-3);">Ctrl I</kbd> inventory
+            <kbd style="margin-left: var(--s-3);">Ctrl ,</kbd> settings
+        </span>
+    </footer>
+</div>
 
-    <script>
-        const API_URL = 'http://localhost:3000/api';
-        let currentUser = { token: null, role: null, username: null };
-        let currentQueue = [];
-        let catalog = [];
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="modal-backdrop" id="modalBackdrop" hidden></div>
 
-        function authHeaders() {
-            return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` };
-        }
-
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const res = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: loginUser.value, password: loginPass.value })
-                });
-                
-                if (!res.ok) throw new Error();
-                currentUser = await res.json();
-
-                document.getElementById('loginView').style.display = 'none';
-                document.getElementById('appView').style.display = 'block';
-                document.getElementById('activeUser').innerText = currentUser.username;
-                document.getElementById('activeRole').innerText = currentUser.role;
-
-                document.querySelectorAll('.admin-only').forEach(el => {
-                    currentUser.role === 'admin' ? el.classList.remove('admin-only') : el.classList.add('admin-only');
-                });
-
-                await fetchInventory();
-                loadRecentSales();
-            } catch {
-                alert("Invalid username or password.");
-            }
-        });
-
-        function logout() { location.reload(); }
-
-        // Fetch Inventory
-        async function fetchInventory() {
-            const res = await fetch(`${API_URL}/inventory`, { headers: authHeaders() });
-            catalog = await res.json();
-
-            // Populate searchable datalist for cashiers
-            const list = document.getElementById('inventoryList');
-            list.innerHTML = '';
-            catalog.forEach(item => {
-                list.innerHTML += `<option value="${item.name}">Stock: ${item.quantity} | ₦${item.price}</option>`;
-            });
-
-            // Populate Admin Inventory Table
-            const invBody = document.getElementById('inventoryTableBody');
-            if (invBody) {
-                invBody.innerHTML = '';
-                catalog.forEach(item => {
-                    invBody.innerHTML += `
-                        <tr>
-                            <td><strong>${item.name}</strong></td>
-                            <td>${item.category}</td>
-                            <td>${item.quantity}</td>
-                            <td>₦${Number(item.price).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        // Cashier auto-fill price and stock on selecting item
-        function handleProductSelect() {
-            const val = document.getElementById('itemSearch').value.trim().toLowerCase();
-            const item = catalog.find(i => i.name.toLowerCase() === val);
-            
-            if (item) {
-                document.getElementById('price').value = item.price;
-                document.getElementById('availableStock').value = item.quantity;
-            } else {
-                document.getElementById('price').value = '';
-                document.getElementById('availableStock').value = '';
-            }
-        }
-
-        // Cashier add item to queue
-        document.getElementById('cashierForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const val = document.getElementById('itemSearch').value.trim().toLowerCase();
-            const item = catalog.find(i => i.name.toLowerCase() === val);
-            
-            if (!item) return alert("Select a valid product registered in inventory.");
-
-            const qty = parseInt(document.getElementById('quantity').value, 10);
-            if (qty > item.quantity) {
-                return alert(`Requested quantity (${qty}) exceeds stock available (${item.quantity}).`);
-            }
-
-            currentQueue.push({
-                name: item.name,
-                price: item.price,
-                quantity: qty,
-                total: qty * item.price
-            });
-
-            renderQueue();
-            document.getElementById('cashierForm').reset();
-            document.getElementById('price').value = '';
-            document.getElementById('availableStock').value = '';
-        });
-
-        function renderQueue() {
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '';
-            currentQueue.forEach((q, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${q.name}</td>
-                        <td>x${q.quantity}</td>
-                        <td>₦${q.price.toFixed(2)}</td>
-                        <td>₦${q.total.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        // Print & complete sale
-        async function printReceipt() {
-            if (!currentQueue.length) return alert("Cart is empty.");
-
-            const orderNum = String(Math.floor(100000 + Math.random() * 900000));
-            const grandTotal = currentQueue.reduce((sum, item) => sum + item.total, 0);
-
-            document.getElementById('receiptOrderNum').innerText = orderNum;
-            document.getElementById('receiptDate').innerText = new Date().toLocaleString();
-            document.getElementById('receiptSalesPerson').innerText = currentUser.username;
-
-            const list = document.getElementById('receiptItemList');
-            list.innerHTML = '';
-            currentQueue.forEach(item => {
-                list.innerHTML += `<div class="item-row"><div>${item.name} (x${item.quantity})</div><div>₦${item.total.toFixed(2)}</div></div>`;
-            });
-            document.getElementById('receiptGrandTotal').innerText = `₦${grandTotal.toFixed(2)}`;
-
-            window.print();
-
-            const res = await fetch(`${API_URL}/save-receipt`, {
-                method: 'POST',
-                headers: authHeaders(),
-                body: JSON.stringify({
-                    orderNumber: orderNum,
-                    totalAmount: grandTotal,
-                    items: currentQueue,
-                    timestamp: new Date().toISOString()
-                })
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                return alert(err.error || "Failed to process sale.");
-            }
-
-            currentQueue = [];
-            renderQueue();
-            await fetchInventory();
-            loadRecentSales();
-        }
-
-        // Admin: Add/Update product
-        document.getElementById('inventoryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                name: document.getElementById('invName').value,
-                category: document.getElementById('invCategory').value,
-                quantity: document.getElementById('invQuantity').value,
-                price: document.getElementById('invPrice').value
-            };
-
-            const res = await fetch(`${API_URL}/inventory`, {
-                method: 'POST',
-                headers: authHeaders(),
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                alert("Product saved to inventory.");
-                document.getElementById('inventoryForm').reset();
-                fetchInventory();
-            }
-        });
-
-        // Admin: Create cashier account
-        document.getElementById('createCashierForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const res = await fetch(`${API_URL}/create-cashier`, {
-                method: 'POST',
-                headers: authHeaders(),
-                body: JSON.stringify({
-                    username: document.getElementById('newCashierUser').value.trim(),
-                    password: document.getElementById('newCashierPass').value
-                })
-            });
-
-            const data = await res.json();
-            alert(data.message || data.error);
-            if (res.ok) document.getElementById('createCashierForm').reset();
-        });
-
-        // Load sales history
-        async function loadRecentSales() {
-            const res = await fetch(`${API_URL}/receipts`, { headers: authHeaders() });
-            const data = await res.json();
-
-            // Cashier reference table
-            const refBody = document.getElementById('referenceHistoryBody');
-            refBody.innerHTML = '';
-            data.forEach(r => {
-                const itemsSummary = r.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
-                refBody.innerHTML += `
-                    <tr>
-                        <td>${new Date(r.timestamp).toLocaleTimeString()}</td>
-                        <td>${r.orderNumber}</td>
-                        <td>${itemsSummary}</td>
-                        <td>₦${Number(r.totalAmount).toFixed(2)}</td>
-                        <td>${r.processedBy}</td>
-                    </tr>
-                `;
-            });
-
-            // Admin table
-            const adminBody = document.getElementById('adminSalesBody');
-            if (adminBody) {
-                adminBody.innerHTML = '';
-                data.forEach(r => {
-                    const itemsSummary = r.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
-                    adminBody.innerHTML += `
-                        <tr>
-                            <td>${new Date(r.timestamp).toLocaleDateString()} ${new Date(r.timestamp).toLocaleTimeString()}</td>
-                            <td><strong>${r.orderNumber}</strong></td>
-                            <td>${r.processedBy}</td>
-                            <td>${itemsSummary}</td>
-                            <td>₦${Number(r.totalAmount).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        function switchView(view) {
-            document.getElementById('cashierView').style.display = view === 'cashier' ? 'grid' : 'none';
-            document.getElementById('adminView').style.display = view === 'admin' ? 'grid' : 'none';
-            document.getElementById('navCashier').classList.toggle('active', view === 'cashier');
-            document.getElementById('navAdmin').classList.toggle('active', view === 'admin');
-            if (view === 'admin') {
-                fetchInventory();
-                loadRecentSales();
-            }
-        }
-    </script>
+<!-- Classic scripts, loaded in dependency order. file:// blocks ES
+     modules, and this app deliberately has no build step. -->
+<script src="src/js/format.js"></script>
+<script src="src/js/dom.js"></script>
+<script src="src/js/state.js"></script>
+<script src="src/js/api.js"></script>
+<script src="src/js/ui.js"></script>
+<script src="src/js/receipt.js"></script>
+<script src="src/js/auth.js"></script>
+<script src="src/js/terminal.js"></script>
+<script src="src/js/sales.js"></script>
+<script src="src/js/inventory.js"></script>
+<script src="src/js/settings.js"></script>
+<script src="src/js/app.js"></script>
 </body>
 </html>
