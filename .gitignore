@@ -1,0 +1,6 @@
+﻿node_modules/
+dist/
+users.json
+inventory.json
+receipts.json
+RECOVERY_KEY.txt

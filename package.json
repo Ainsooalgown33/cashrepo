@@ -1,0 +1,41 @@
+{
+  "name": "cashier-pos",
+  "version": "1.0.0",
+  "description": "Cashier Data Processing System",
+  "author": "Big Daddy",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.bigdaddy.cashierpos",
+    "productName": "Cashier POS",
+    "electronVersion": "29.4.6",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "extraFiles": [
+      "database.json"
+    ]
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "electron": "29.4.6",
+    "electron-builder": "^26.15.3"
+  }
+}
